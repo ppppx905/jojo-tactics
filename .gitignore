@@ -1,0 +1,7 @@
+﻿node_modules/
+.piptmp/
+output/
+*.zip
+.DS_Store
+Thumbs.db
+

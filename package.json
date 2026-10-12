@@ -1,0 +1,13 @@
+{
+  "name": "stardust-tactics",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node tools/serve.mjs 8799",
+    "test": "node --test tests/*.test.js",
+    "test:browser": "node tools/browser-test.mjs",
+    "check": "npm test && npm run test:browser"
+  },
+  "devDependencies": { "playwright": "1.63.0" }
+}

@@ -1,0 +1,360 @@
+{
+  "RULE": {
+    "apPerTurn": 3,
+    "moveCost": 1,
+    "attackCost": 1,
+    "distLimit": 2,
+    "standDefBonus": 2,
+    "bushDefBonus": 3,
+    "rockAdjDef": 1,
+    "healAmt": 10,
+    "hazardDmg": 3,
+    "burnMax": 2,
+    "burnDmgPerStack": 1,
+    "fireDmg": 3,
+    "blazeHealPerTile": 2,
+    "masteryMax": 3,
+    "bladeBonus": 1,
+    "armorAP": 1,
+    "vineBreakAP": 1,
+    "vineMovePenalty": 1,
+    "pillarRegen": 1,
+    "waterMovePenalty": 1
+  },
+  "FIGHTERS": {
+    "jotaro": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 2,
+      "standDefBonus": 2,
+      "dmg": 8,
+      "range": 2,
+      "moveU": 3,
+      "moveS": 4,
+      "timeRule": "window"
+    },
+    "dio": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 2,
+      "standDefBonus": 2,
+      "dmg": 7,
+      "range": 2,
+      "moveU": 3,
+      "moveS": 4,
+      "timeRule": "hp"
+    },
+    "temperance": {
+      "hp": 35,
+      "def": 2,
+      "distLimit": 0,
+      "standDefBonus": 0,
+      "dmg": 6,
+      "range": 1,
+      "moveU": 3,
+      "moveS": 0,
+      "solo": true,
+      "standName": "黄色节制",
+      "boss": true
+    },
+    "kakyoin": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 3,
+      "standDefBonus": 1,
+      "dmg": 7,
+      "range": 3,
+      "moveU": 3,
+      "moveS": 4
+    },
+    "avdol": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 2,
+      "standDefBonus": 2,
+      "dmg": 7,
+      "range": 3,
+      "moveU": 3,
+      "moveS": 4
+    },
+    "polnareff": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 2,
+      "standDefBonus": 2,
+      "dmg": 7,
+      "range": 2,
+      "moveU": 3,
+      "moveS": 4
+    },
+    "joseph": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 0,
+      "standDefBonus": 0,
+      "dmg": 7,
+      "range": 3,
+      "moveU": 3,
+      "moveS": 0,
+      "solo": true,
+      "standName": "隐者之紫"
+    },
+    "iggy": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 3,
+      "standDefBonus": 2,
+      "dmg": 7,
+      "range": 2,
+      "moveU": 4,
+      "moveS": 4
+    },
+    "gray_fly": {
+      "hp": 45,
+      "def": 2,
+      "distLimit": 4,
+      "standDefBonus": 1,
+      "dmg": 7,
+      "range": 1,
+      "moveU": 3,
+      "moveS": 5,
+      "boss": true
+    },
+    "fake_captain": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 3,
+      "standDefBonus": 2,
+      "dmg": 7,
+      "range": 1,
+      "moveU": 3,
+      "moveS": 4,
+      "boss": true
+    },
+    "forever": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 0,
+      "standDefBonus": 0,
+      "dmg": 8,
+      "range": 1,
+      "moveU": 4,
+      "moveS": 0,
+      "solo": true,
+      "standName": "力量",
+      "boss": true
+    },
+    "ebony": {
+      "hp": 40,
+      "def": 2,
+      "distLimit": 4,
+      "standDefBonus": 2,
+      "dmg": 7,
+      "range": 2,
+      "moveU": 3,
+      "moveS": 4,
+      "boss": true
+    }
+  },
+  "SKILLS": {
+    "ora": {
+      "by": "stand",
+      "cd": 2,
+      "cost": 2,
+      "name": "欧拉欧拉",
+      "range": 1
+    },
+    "star": {
+      "by": "stand",
+      "cd": 1,
+      "cost": 1,
+      "name": "流星指刺",
+      "range": 3
+    },
+    "drain": {
+      "base": 7,
+      "by": "user",
+      "cd": 1,
+      "cost": 1,
+      "name": "吸血",
+      "range": 2
+    },
+    "knife": {
+      "by": "any",
+      "cd": 2,
+      "cost": 1,
+      "name": "飞刀",
+      "range": 3
+    },
+    "erosion": {
+      "by": "any",
+      "erosionDmg": 2,
+      "name": "侵蚀",
+      "passive": true
+    },
+    "slime": {
+      "by": "any",
+      "cd": 2,
+      "cost": 1,
+      "guard": 2,
+      "name": "史莱姆防御"
+    },
+    "time": {
+      "by": "stand",
+      "cd": 0,
+      "cost": 0,
+      "name": "时间停止",
+      "range": 0
+    },
+    "burn": {
+      "by": "any",
+      "name": "灼烧",
+      "passive": true
+    },
+    "flame": {
+      "by": "stand",
+      "cd": 2,
+      "cost": 1,
+      "max": 3,
+      "name": "火焰道路",
+      "range": 3
+    },
+    "blaze": {
+      "by": "stand",
+      "cd": 0,
+      "cost": 1,
+      "name": "涅槃",
+      "once": true
+    },
+    "emerald": {
+      "by": "stand",
+      "cap": 3,
+      "cd": 2,
+      "cost": 1,
+      "name": "绿宝石",
+      "pillarHp": 10,
+      "range": 3
+    },
+    "trauma": {
+      "by": "any",
+      "name": "创伤",
+      "passive": true
+    },
+    "splash": {
+      "base": 6,
+      "by": "stand",
+      "cd": 3,
+      "cost": 2,
+      "name": "绿宝石水花",
+      "perPillar": 6,
+      "range": 4
+    },
+    "mastery": {
+      "by": "any",
+      "name": "精湛剑术",
+      "passive": true
+    },
+    "armor": {
+      "altName": "装甲",
+      "by": "stand",
+      "cd": 2,
+      "cost": 0,
+      "name": "卸甲",
+      "toggle": true
+    },
+    "blade": {
+      "by": "stand",
+      "cd": 1,
+      "cost": 1,
+      "line": true,
+      "name": "发射剑刃",
+      "range": 4
+    },
+    "nextline": {
+      "by": "any",
+      "name": "你的下一句话是",
+      "passive": true
+    },
+    "vine": {
+      "by": "user",
+      "cd": 1,
+      "cost": 1,
+      "name": "藤蔓缠绕",
+      "range": 3
+    },
+    "hamon": {
+      "base": 6,
+      "bonus": 3,
+      "by": "user",
+      "cd": 2,
+      "cost": 2,
+      "name": "波纹疾走",
+      "range": 3
+    },
+    "dive": {
+      "by": "any",
+      "cd": 2,
+      "cost": 0,
+      "guard": 1,
+      "name": "潜沙",
+      "swap": true
+    },
+    "sandblast": {
+      "by": "stand",
+      "cd": 3,
+      "cost": 1,
+      "dmg": 3,
+      "miss": 0.3,
+      "name": "扬沙",
+      "range": 2
+    },
+    "claw": {
+      "bonus": 3,
+      "by": "stand",
+      "cd": 1,
+      "cost": 1,
+      "execute": 2,
+      "name": "沙之爪",
+      "range": 1
+    },
+    "needle": {
+      "bonus": 2,
+      "by": "stand",
+      "cd": 1,
+      "cost": 1,
+      "execute": 2,
+      "name": "针舌穿刺",
+      "range": 2
+    },
+    "disguise": {
+      "by": "any",
+      "cut": 2,
+      "name": "伪装",
+      "passive": true
+    },
+    "drag": {
+      "by": "stand",
+      "cd": 1,
+      "cost": 1,
+      "drownDmg": 2,
+      "drownTurns": 2,
+      "name": "拖入水下",
+      "range": 2
+    },
+    "sucker": {
+      "bonus": 3,
+      "by": "stand",
+      "cd": 1,
+      "cost": 1,
+      "execute": 2,
+      "name": "吸盘突袭",
+      "range": 1
+    },
+    "aquatic": {
+      "by": "any",
+      "name": "水下呼吸",
+      "passive": true,
+      "regen": 2
+    }
+  }
+}

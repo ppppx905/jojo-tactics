@@ -1,0 +1,124 @@
+{
+  "jotaro": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      0,
+      0,
+      384,
+      512
+    ]
+  },
+  "star_platinum": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      384,
+      0,
+      768,
+      512
+    ]
+  },
+  "dio": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      768,
+      0,
+      1152,
+      512
+    ]
+  },
+  "the_world": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      1152,
+      0,
+      1536,
+      512
+    ]
+  },
+  "kakyoin": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      0,
+      512,
+      384,
+      1024
+    ]
+  },
+  "hierophant": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      384,
+      512,
+      768,
+      1024
+    ]
+  },
+  "avdol": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      768,
+      512,
+      1152,
+      1024
+    ]
+  },
+  "magicians_red": {
+    "width": 192,
+    "height": 288,
+    "source_box": [
+      1152,
+      512,
+      1536,
+      1024
+    ]
+  },
+  "polnareff": {
+    "width": 192,
+    "height": 288,
+    "source_box": null,
+    "note": "单独生成、非切图（第五名角色）：源图 assets/src/polnareff-v3.png，提示词 design/prompts/standees-polnareff-v3.txt，处理脚本 tools/prepare_standee.mjs"
+  },
+  "silver_chariot": {
+    "width": 192,
+    "height": 288,
+    "source_box": null,
+    "note": "单独生成、非切图（波鲁纳雷夫的替身）：源图 assets/src/silver-chariot-v2.png（v1 白底→v2 纯蓝底），提示词 design/prompts/standees-silver_chariot.txt，画风参考 assets/out/standees/star_platinum.webp，处理脚本 tools/prepare_standee.mjs"
+  },
+  "joseph": {
+    "width": 192,
+    "height": 288,
+    "source_box": null,
+    "note": "单独生成、非切图（第六名角色，单单位：只有本体，没有替身立绘）：源图 assets/src/joseph-v2.png（v1 白底→v2 纯蓝底），提示词 design/prompts/standees-joseph.txt，画风参考 assets/out/standees/jotaro.webp，处理脚本 tools/prepare_standee.mjs"
+  },
+  "iggy": {
+    "width": 192,
+    "height": 288,
+    "source_box": null,
+    "note": "单独生成、非切图（第七名角色伊奇的使者棋子）：源图 assets/src/iggy-v2-blue.png（v1 白底→v2 纯蓝底，用 image_gen edit 只换背景），提示词 design/prompts/standees-iggy.txt + standees-iggy-bg.txt，处理脚本 tools/prepare_standee.mjs"
+  },
+  "the_fool": {
+    "width": 192,
+    "height": 288,
+    "source_box": null,
+    "note": "单独生成、非切图（伊奇的替身「愚者」，沙之兽）：源图 assets/src/the_fool-v1.png（一次就是纯蓝底），提示词 design/prompts/standees-the_fool.txt，处理脚本 tools/prepare_standee.mjs"
+  },
+  "tower_of_gray": {
+    "width": 192,
+    "height": 288,
+    "source_box": null,
+    "note": "★ 剧情 boss 素材（不是可玩角色，**未登记进 CHARACTER_ART**）：替身「灰塔」的甲虫形态。源图 assets/src/tower_of_gray-v2.png（透明底），提示词 design/prompts/standees-tower_of_gray-v2.txt，参考图 design/review/灰塔-参考资料-用户提供.webp。第 1 版画成苍蝇、已被用户否定"
+  },
+  "gray_fly": {
+    "width": 192,
+    "height": 288,
+    "source_box": null,
+    "note": "★ 剧情 boss 素材（不是可玩角色，**未登记进 CHARACTER_ART**）：本体「格雷·弗莱」，简朴老者造型。源图 assets/src/gray_fly-v2.png（纯蓝底），提示词 design/prompts/standees-gray_fly-v2.txt。第 1 版画成穿西装的体面老绅士、已被用户否定（原话「不要西装、简朴一点、太帅了」）"
+  }
+}

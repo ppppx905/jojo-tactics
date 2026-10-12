@@ -1,0 +1,681 @@
+/* One layout contract: equal faction bays, a measured canvas well and a fixed dock. */
+#app { width: min(100vw, 177.77778dvh); height: min(100dvh, 56.25vw); padding: clamp(12px, 1.3vw, 25px); display: grid; grid-template-rows: 48px minmax(0, 1fr) 144px auto; gap: 12px; }
+.masthead { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding-bottom: 11px; }
+.wordmark { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-display); font-size: 31px; line-height: .85; letter-spacing: .08em; }
+.brand-star { color: var(--gold); font-size: 39px; line-height: 1; }
+.brand-small { display: block; font: 8px/1.6 var(--font-mono); letter-spacing: .16em; margin-top: 6px; color: var(--muted); }
+.match-heading { display: flex; gap: 17px; align-items: center; margin-right: auto; padding-left: 22px; border-left: 1px solid var(--line); }
+.chapter-label { color: var(--subtle); font-size: 11px; letter-spacing: .12em; }
+.mode-label { font-size: 10px; color: var(--muted); border: 1px solid var(--line); padding: 2px 8px; }
+.toolbar { display: flex; gap: 6px; align-items: center; }
+#connection { font-size: 10px; color: var(--gold); max-width: 160px; }
+.arena { min-height: 0; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr) var(--side-w); gap: clamp(12px, 1.3vw, 24px); }
+.fighter-bay { position: relative; border: 1px solid var(--line); border-top: 2px solid var(--team); min-height: 0; min-width: 0; display: flex; flex-direction: column; background: linear-gradient(140deg, #222032, #171521 65%); transition: border-color .2s; }
+.fighter-bay.is-turn { border-color: color-mix(in srgb, var(--team) 60%, #3b3140); }
+.bay-heading { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; font: 10px/1.4 var(--font-mono); letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.bay-heading strong { color: var(--team); letter-spacing: .08em; font-size: 12px; }
+.bay-heading .current { color: var(--gold); }
+.compact-name, .actor-shortcuts { display: none; }
+.bay-portrait { position: relative; flex: 1 1 auto; min-height: 104px; overflow: hidden; isolation: isolate; background: var(--team-dim); }
+.bay-portrait::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, #171521 0%, #171521cc 10%, transparent 64%); z-index: 1; pointer-events: none; }
+.bay-portrait > img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; position: absolute; inset: 0; filter: saturate(.83) contrast(1.04); }
+.bay-portrait .portrait-grid { position: absolute; inset: 0; background: radial-gradient(#100b2188 .6px, transparent 1px); background-size: 3px 3px; opacity: .25; }
+.bay-name { position: absolute; bottom: 8px; left: 14px; right: 12px; z-index: 2; }
+.bay-name .roman { display: block; color: var(--team); font: 9px var(--font-mono); letter-spacing: .11em; margin-bottom: 3px; }
+.bay-name h2 { font-size: clamp(23px, 2vw, 33px); line-height: 1.2; text-shadow: 2px 2px #17111e; }
+.bay-name .archetype { font-size: 10px; color: #d9cbdc; }
+.bay-body { flex-shrink: 0; padding: 0 12px 9px; }
+.bay-health { padding: 5px 0 9px; }
+.hp-line { display: flex; justify-content: space-between; align-items: baseline; }
+.hp-line .hp-caption { color: var(--muted); font-size: 10px; }
+.hp-line .hp-caption .ico { width: 12px; height: 12px; color: var(--hp); margin-right: 3px; }
+.hp-value { font: 25px/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+.hp-value small { font: 11px var(--font-mono); color: var(--muted); }
+.hpbar { height: 6px; margin-top: 6px; background: #39313b; position: relative; overflow: hidden; }
+.hpbar > i { display: block; width: 0; height: 100%; background: var(--hp); transition: width .28s ease; }
+.hpbar::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(20% - 1px), #141122 20%); opacity: .8; }
+.hpbar.low > i { background: var(--danger); }
+.hp-value.low { color: var(--danger); }
+.bay-ap { display: flex; justify-content: space-between; margin-top: 5px; font-size: 10px; color: var(--muted); }
+.bay-ap b { font: 10px var(--font-mono); color: var(--gold); }
+.unit-list { display: grid; gap: 5px; }
+.unit-option { display: flex; align-items: center; gap: 8px; text-align: left; width: 100%; min-height: 45px; padding: 3px 7px; background: #211c2a; border: 1px solid var(--line); transition: background .15s, border-color .15s; }
+.unit-option:hover { background: #2d2437; border-color: var(--team); }
+.unit-option.selected { border-color: var(--gold); background: #332939; box-shadow: inset 3px 0 var(--gold); }
+.unit-option.inspecting { border-color: var(--team); }
+.unit-option:disabled { cursor: default; }
+.unit-mini { height: 36px; width: 29px; object-fit: contain; object-position: 50% 25%; }
+.unit-text { flex: 1; min-width: 0; }
+.unit-name { display: block; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.unit-name small { font-size: 9px; color: var(--team); margin-right: 5px; }
+.unit-stats { display: flex; gap: 8px; color: var(--muted); font-size: 10px; }
+.unit-stats b { color: #ddd2e1; font-weight: 500; }
+.unit-stats .ico { height: 10px; width: 10px; margin-right: 2px; }
+.unit-key { font: 10px var(--font-mono); color: var(--subtle); }
+.tether-stat { margin: 6px 0; display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--muted); }
+.tether-stat .ico { width: 12px; height: 12px; }
+.tether-stat b { font-family: var(--font-mono); color: var(--team); font-weight: 400; }
+.bay-skills { border-top: 1px solid var(--line); padding-top: 5px; display: grid; gap: 1px; }
+.bay-skill { display: flex; align-items: center; min-width: 0; width: 100%; gap: 7px; border: none; background: transparent; padding: 5px 1px; min-height: 27px; text-align: left; }
+.bay-skill:hover, .bay-skill:focus-visible { background: #302536; }
+.bay-skill .ico { color: var(--team); width: 15px; height: 15px; }
+.bay-skill b { font-weight: 400; font-size: 11px; white-space: nowrap; }
+.bay-skill small { font: 9px/1.3 var(--font-body); color: var(--muted); margin-left: auto; text-align: right; }
+.bay-skill .ready { color: var(--gold); }
+.status-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.status-tag { padding: 2px 5px; font-size: 9px; background: #32232d; color: var(--danger); border: 1px solid #66444f; margin-top: 5px; }
+.status-tag.good { color: var(--gold-hi); border-color: #675735; background: #352e24; }
+.board-stage { min-width: 0; min-height: 0; display: grid; grid-template-rows: 27px minmax(0, 1fr) 25px; position: relative; }
+.board-head { display: flex; align-items: center; justify-content: space-between; padding: 0 6px 5px; }
+.board-head .eyebrow { color: var(--muted); font-size: 9px; }
+.board-pan-hint { display: none; }
+.round-label { color: var(--subtle); font: 9px var(--font-mono); letter-spacing: .15em; }
+.round-label b { color: var(--gold); font-size: 13px; margin-left: 6px; }
+#boardWell { min-height: 0; min-width: 0; width: 100%; position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at 50% 50%, #34304355, transparent 68%); }
+#board { display: block; border: none; outline-offset: -2px; flex-shrink: 0; touch-action: pan-x pan-y; cursor: crosshair; }
+#board:focus-visible { outline: 2px solid var(--gold); }
+.board-legend { display: flex; align-items: center; justify-content: center; gap: 16px; color: var(--muted); font-size: 10px; padding: 4px 0 0; }
+.board-legend > span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.board-legend i { font-style: normal; }
+.legend-move { color: var(--move); font-size: 9px; }
+.legend-attack { width: 12px; height: 12px; border: 1px solid #da8e97; background: repeating-linear-gradient(135deg, transparent 0 2px, #de809975 3px 4px); }
+.legend-target { color: var(--p2); font-size: 17px; line-height: 1; }
+/* ★ 可拾取道具（2026-10-05 用户拍板）：盘面上每种道具各有各的颜色（见 render.js 的 drawItem），
+   图例只负责说明"这一类东西能捡走"，所以这里用一个中性的暖色方块，不跟任何一种道具绑死。 */
+.legend-item { color: #e2704a; font-size: 13px; line-height: 1; }
+.legend-link { color: var(--gold); font-size: 22px; line-height: .5; }
+.board-legend .text-btn { margin-left: auto; font-size: 10px; }
+#turnBanner { position: absolute; top: 42%; left: 50%; translate: -50% -50%; background: #16111ef2; border-block: 1px solid var(--gold); padding: 12px 40px; color: var(--gold-hi); pointer-events: none; opacity: 0; font-family: var(--font-display); font-size: 28px; white-space: nowrap; z-index: 7; }
+#turnBanner.show { animation: turnBanner 1.05s both; }
+@keyframes turnBanner { 0% { opacity: 0; transform: translateX(-20px); } 15%, 75% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(15px); } }
+/* 战场换层横幅（第五章「力量」拆掉船体要害）：比回合横幅更醒目、停留更久（2.6s），
+   要一眼读出"船体塌了一层、现在在第几层、还剩几个要害"。 */
+#stageBanner { position: absolute; left: 50%; top: 12%; translate: -50% 0; width: max-content; max-width: 92%; text-align: center; background: linear-gradient(180deg, #1b1424f5, #120d1af5); border: 1px solid var(--gold); border-radius: 4px; box-shadow: 0 6px 0 #0b0810cc; padding: 10px 26px 12px; pointer-events: none; opacity: 0; z-index: 8; }
+#stageBanner.show { animation: stageBanner 2.6s both; }
+#stageBanner .stage-kicker { display: block; font-size: 11px; letter-spacing: .16em; color: #c9a24a; }
+#stageBanner b { display: block; margin: 2px 0 3px; font-family: var(--font-display); font-size: 26px; line-height: 1.15; color: var(--gold-hi); }
+#stageBanner .stage-tail { display: block; font-size: 12px; color: #b9aec6; }
+@keyframes stageBanner {
+  0% { opacity: 0; transform: translateY(-14px) scale(.96); }
+  8%, 82% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-6px) scale(1); }
+}
+/* 战斗内台词（每章 4 句：开局 / 第 2 回合 / 半血 / 击倒对手）：横跨棋盘下半部的对白框，
+   左侧是说话人的棋子立绘（透明底，当对话头像用）。
+   "旁白"与"关卡机制"没有立绘，会自动收成窄版（`is-narration`）并用另一种配色。 */
+#bark { position: absolute; left: 3%; right: 3%; bottom: 10px; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px; padding: 12px 18px 14px; background: linear-gradient(180deg, #171223f7, #100c18fa); border: 1px solid #6f5a8a; border-left: 4px solid var(--gold); border-radius: 4px; box-shadow: 0 6px 0 #0b0810cc; pointer-events: none; opacity: 0; z-index: 9; text-align: left; min-height: 128px; }
+#bark.is-narration { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+#bark .bark-face { width: 156px; height: 104px; object-fit: cover; object-position: center 18%; border: 1px solid #4a3d5e; border-radius: 3px; filter: saturate(1.05); }
+#bark .bark-body { min-width: 0; padding-bottom: 2px; }
+#bark.show { animation: barkIn .28s both; opacity: 1; }
+@keyframes barkIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+#bark p { margin: 0; font-size: 15px; line-height: 1.55; color: #efe7f6; }
+#bark .bark-lines { display: grid; gap: 4px; min-width: 0; }
+#bark .bark-lines p::before { content: none; }
+#bark .bark-who { display: block; margin-bottom: 5px; font-family: var(--font-display); font-size: 16px; letter-spacing: .08em; color: var(--gold-hi); }
+#bark .bark-narration { display: inline-block; margin-bottom: 5px; font-size: 10px; letter-spacing: .14em; color: #9dbcd0; border: 1px solid #46637a; border-radius: 2px; padding: 1px 5px; }
+#bark.is-narration p { font-size: 12.5px; color: #cfe0ec; }
+/* 机制提示那种"一个框里好几条"的写法：逐行列出，行距紧一点 */
+#bark.is-narration .bark-lines p::before { content: '· '; color: #c9a24a; }
+/* ★ 2026-10-03 用户要求①的一句提示：点空白处能跳过正在播的台词 / 提示 / 大字横幅。
+   刻意做得**很小很淡**（用户原话"别做成大白话教学"），两处挂它：棋盘图例里一行、台词框里一行。 */
+.skip-hint { display: block; margin-top: 6px; font-size: 10px; line-height: 1.4; letter-spacing: .04em; color: #7f7691; }
+/* 图例里那一行跟其它图例同一行，所以不要块级的上下边距 */
+.board-legend > .skip-hint { margin-top: 0; }
+/* 剧情页「本关规则」里的**关卡特殊机制**（第 4、5 关）：用金色左边框单独标出来 */
+.story-special { border-left: 2px solid var(--gold); padding: 2px 0 2px 9px; margin: 5px 0; color: #dcc9a4; }
+.story-special b { color: var(--gold-hi); }
+.story-special-title { font-size: 11px; letter-spacing: .12em; color: #c9a24a; margin: 9px 0 3px; }
+.action-dock { border: 1px solid #5b495e; background: linear-gradient(120deg, #231f2d, #1a1823 60%); display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr) var(--side-w); gap: clamp(12px, 1.3vw, 24px); min-height: 0; box-shadow: 0 4px 0 #0c0911; position: relative; }
+.action-dock::before { content: ''; position: absolute; width: 50px; height: 2px; background: var(--gold); top: -1px; left: 0; }
+.actor-summary { display: flex; align-items: center; gap: 9px; padding: 12px; border-right: 1px solid var(--line); min-width: 0; }
+.actor-summary .actor-img { width: 53px; height: 94px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(-3px 2px 0 #100e1b); }
+.actor-summary .actor-idle { width: 42px; height: 60px; flex-shrink: 0; color: var(--gold); display: grid; place-items: center; }
+.actor-summary .actor-idle .ico { width: 34px; height: 34px; }
+.actor-copy { min-width: 0; }
+.actor-copy .eyebrow { color: var(--team, var(--gold)); font-size: 9px; }
+.actor-copy h3 { font-size: 20px; margin: 5px 0 3px; line-height: 1.2; }
+.actor-copy small { display: block; color: var(--muted); font-size: 10px; }
+.actor-copy .actor-distance { margin-top: 8px; font: 10px var(--font-mono); color: var(--gold); }
+.action-center { min-width: 0; padding: 9px 0 7px; display: grid; grid-template-rows: 22px minmax(0, 1fr) 25px; gap: 5px; }
+.action-heading { display: flex; align-items: center; gap: 12px; min-width: 0; }
+#actionTitle { color: var(--gold); font-size: 10px; letter-spacing: .08em; white-space: nowrap; }
+.keyboard-hint { font: 9px var(--font-body); color: var(--subtle); margin-left: auto; white-space: nowrap; }
+.target-preview { display: flex; gap: 8px; align-items: center; min-width: 0; flex: 1; overflow: hidden; color: var(--muted); font-size: 11px; line-height: 1.4; white-space: nowrap; text-overflow: ellipsis; }
+.target-preview:empty { display: none; }
+.target-preview .ico { height: 14px; width: 14px; }
+.target-preview .target-name { color: var(--text); font-weight: 500; }
+.target-preview .damage-preview { color: var(--gold-hi); font: 15px var(--font-mono); }
+.target-preview .unavailable { color: var(--danger); }
+.target-preview .lethal { color: var(--gold-hi); border: 1px solid #685237; padding: 0 4px; font-size: 10px; }
+.action-heading:has(.target-preview:not(:empty)) .keyboard-hint { display: none; }
+.command-grid { display: flex; gap: 7px; min-height: 0; }
+.command-grid > * { flex: 1 1 0; min-width: 0; }
+.command { position: relative; min-width: 0; display: grid; grid-template-columns: 27px minmax(0, 1fr); grid-template-rows: 1fr 1fr; align-items: center; column-gap: 7px; padding: 8px 8px 6px; background: #2a2335; border: 1px solid #55445f; text-align: left; overflow: hidden; transition: background .12s, border-color .12s; }
+.command .ico { width: 23px; height: 23px; grid-row: span 2; color: var(--gold); }
+.command .command-name { font-size: 12px; font-weight: 500; white-space: nowrap; }
+.command .command-meta { color: var(--muted); font: 10px/1.3 var(--font-mono); white-space: nowrap; }
+.command kbd { position: absolute; right: 4px; top: 4px; font-size: 8px; line-height: 12px; min-width: 12px; border: none; background: #1d172580; padding: 0 2px; color: var(--subtle); }
+.command:hover, .command:focus-visible { background: #3b2c46; border-color: var(--gold); }
+.command[aria-disabled="true"] { background: #211e2a; border-color: #3e3446; color: #a39aa9; }
+.command[aria-disabled="true"] .ico { color: #887c94; }
+.command[aria-disabled="true"]::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(130deg, transparent 0 7px, #97869609 8px 9px); pointer-events: none; }
+.command.active { border-color: var(--gold); background: #443348; box-shadow: inset 0 -2px var(--gold); }
+.command.passive .command-meta { font-family: var(--font-body); color: var(--subtle); }
+#info { display: flex; align-items: center; min-width: 0; font-size: 11px; color: var(--muted); gap: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+#info .ico { width: 14px; height: 14px; }
+#info.warn { color: var(--danger); }
+#info strong { font-weight: 500; color: var(--gold); }
+#info .finish-flame { margin-left: auto; color: var(--gold-hi); border: 1px solid var(--gold); padding: 1px 8px; background: #35273b; white-space: nowrap; font-size: 10px; }
+.turn-console { border-left: 1px solid var(--line); padding: 9px 14px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.ap-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 10px; color: var(--muted); }
+.ap-heading b { color: var(--team, var(--gold)); letter-spacing: .08em; }
+.ap-meter { display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-bottom: 9px; }
+.ap-pips { display: flex; gap: 5px; }
+.ap-pip { width: 23px; height: 10px; transform: skewX(-20deg); background: #403442; border: 1px solid #554354; }
+.ap-pip.on { border-color: var(--gold-hi); background: var(--gold); }
+.ap-value { font-size: 16px; color: var(--gold-hi); line-height: 1; }
+.ap-value small { font-size: 11px; color: var(--subtle); }
+.end-turn { min-height: 35px; width: 100%; justify-content: space-between; font-size: 13px; padding: 6px 12px; }
+#turnNote { color: var(--subtle); font-size: 9px; text-align: center; margin-top: 4px; }
+.battle-footer { display: flex; align-items: flex-start; min-width: 0; gap: 18px; }
+/* ---------- 战斗记录：棋盘下方的**常驻面板**（2026-10-03 用户要求「显示全部流程」）----------
+   默认两行高、点标题展开；内容由 hud.js 的 renderLog 渲染进 #fullLogInline。 */
+.log-panel { flex: 1; min-width: 0; border: 1px solid var(--line); background: #1b1626b3; }
+.log-panel-top { display: flex; align-items: center; gap: 12px; padding: 2px 9px; }
+.log-panel-top .text-btn { font-size: 11px; }
+.log-panel-hint { color: var(--subtle); font-size: 9px; }
+#logFullBtn { margin-left: auto; }
+.log-scroll { height: 34px; overflow-y: auto; padding: 0 9px 3px; scrollbar-width: thin; }
+.log-panel.open .log-scroll { height: min(30dvh, 250px); }
+.log-scroll .log-row { grid-template-columns: 30px 16px 1fr; gap: 8px; padding: 2px 0; border-bottom: 0; font-size: 11px; }
+.log-scroll .log-row .ico { width: 13px; height: 13px; }
+.log-scroll .log-row .log-turn { font-size: 9px; }
+.log-panel.open .log-scroll .log-row { padding: 4px 0; border-bottom: 1px solid var(--line); }
+.footer-brand { font: 8px var(--font-mono); letter-spacing: .2em; color: #8b7c9a; white-space: nowrap; }
+/* ---------- 标题页（主菜单）：整张背景画 + 标题 + 三个模式 ---------- */
+/* 背景用 HTML 里的 <img> 而不是 CSS url()：单文件版会把 CSS 内联到根目录的 HTML，
+   CSS 里的相对路径会失效，而 <img src="assets/..."> 在开发版和单文件版都成立。 */
+.title-screen { position: relative; width: 100%; min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; background: #0b0912; isolation: isolate; }
+.title-backdrop { position: absolute; inset: 0; z-index: -2; }
+.title-backdrop img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+/* 压暗遮罩：左侧最重（标题与按钮所在），底部次之，保证任何窗口尺寸下文字都读得清 */
+.title-screen::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(100deg, #0b0912f5 0%, #0b0912d9 30%, #0b091273 56%, #0b091200 80%),
+              linear-gradient(0deg, #0b0912e0 0%, #0b091200 38%); }
+.title-top { display: flex; align-items: center; gap: 20px; padding: 20px 36px 15px; border-bottom: 1px solid var(--line); background: linear-gradient(#0b0912b8, transparent); }
+.title-top .chapter-label { margin-left: auto; }
+.title-main { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; width: 100%; max-width: 1460px; margin: 0 auto; padding: 10px 36px; }
+.title-name { font-size: clamp(48px, 7.2vw, 108px); line-height: 1.02; letter-spacing: .08em; margin: 8px 0 4px; color: #f4eee2; text-shadow: 0 6px 30px #06040cbf, 0 2px 0 #00000073; }
+.title-sub { font-size: clamp(15px, 1.5vw, 21px); letter-spacing: .24em; color: var(--gold); margin: 0 0 30px; text-shadow: 0 2px 14px #06040cd9; }
+.title-menu { display: flex; flex-direction: column; gap: 10px; width: min(370px, 100%); }
+.title-mode { display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 0 12px; text-align: left; padding: 13px 18px; background: #16121fdb; border: 1px solid var(--line); backdrop-filter: blur(3px); transition: border-color .15s, background .15s, translate .15s; }
+.title-mode .mode-number { grid-row: auto; align-self: center; }
+.title-mode-text { display: grid; gap: 2px; align-self: center; }
+.title-mode-text b { font-size: 16px; font-weight: 500; }
+.title-mode-text small { font-size: 11px; color: var(--muted); }
+/* 主菜单不做「默认选中」高亮（用户要求）：平时三个选项一律同色，
+   只有鼠标指针指到的那个（以及键盘聚焦的那个）才高亮。
+   键盘的 :focus-visible 必须保留，否则用 Tab 操作时看不到焦点在哪。 */
+.title-mode:hover:not(:disabled), .title-mode:focus-visible:not(:disabled) { border-color: var(--gold); background: #2f2739f2; translate: 4px 0; }
+.title-mode:disabled { opacity: .42; cursor: not-allowed; }
+.title-mode:disabled .mode-number { color: var(--subtle); }
+.title-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 36px 20px; color: var(--subtle); }
+.title-foot small { font-size: 10px; }
+
+/* ---------- 剧情模式章节选择：已解锁的可点进去，未解锁的只显示标题 ---------- */
+.story-menu-screen { width: min(1080px, 100%); min-height: 100dvh; padding: 22px 36px 34px; }
+.story-menu-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+.story-menu-head { margin: 22px 0 18px; }
+.story-menu-head h2 { font-size: clamp(26px, 3vw, 40px); margin: 6px 0 8px; }
+.story-menu-lead { color: var(--muted); font-size: 12.5px; }
+/* 试玩模式（?unlock=all）的提示条：横跨整个章节网格，必须显眼 */
+.story-trial { grid-column: 1 / -1; padding: 9px 12px; border: 1px solid #c9a24a66; border-radius: 8px; background: #c9a24a14; color: #e6cf9a; font-size: 12px; line-height: 1.6; }
+.story-chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(305px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.story-chapter > button, .story-chapter > div { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 2px 12px; width: 100%; padding: 11px 15px; text-align: left; background: #1b1626; border: 1px solid var(--line); }
+.story-chapter > button:hover { border-color: var(--gold); background: #2b2239; translate: 3px 0; }
+.story-chapter-no { grid-row: span 2; color: var(--gold); font: 15px var(--font-display); }
+.story-chapter-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.story-chapter-name b { font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.story-chapter small { grid-column: 2; color: var(--muted); font-size: 10.5px; }
+.story-badge { flex: 0 0 auto; padding: 1px 6px; border: 1px solid #675735; color: var(--gold-hi); font-size: 9px; }
+.story-chapter.is-cleared > button { border-color: #675735; }
+.story-chapter.is-locked > div { opacity: .4; cursor: not-allowed; }
+.story-chapter.is-locked .story-chapter-no, .story-chapter.is-locked .story-badge { color: var(--subtle); border-color: var(--line); }
+@media (max-width: 760px) {
+  .story-menu-screen { padding: 14px 16px 24px; }
+  .story-chapters { grid-template-columns: 1fr; }
+}
+
+/* ---------- 剧情模式演出页：档案正文 + 本关规则 ---------- */
+.story-stage { width: min(1000px, 100%); min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; align-content: start; padding: 22px 36px 28px; }
+.story-stage-top { display: flex; align-items: center; gap: 16px; padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+.story-stage-top .chapter-label:first-of-type { margin-left: auto; }
+.story-stage-main { display: grid; grid-template-columns: minmax(0, 1fr) 265px; gap: 26px; align-items: start; padding: 22px 0; }
+.story-script h2 { font-size: clamp(25px, 3vw, 37px); margin: 6px 0 4px; }
+.story-script-body { display: grid; gap: 12px; margin-top: 14px; }
+.story-script-body p { margin: 0; padding-left: 14px; border-left: 2px solid #615071; color: var(--text); font-size: 13.5px; line-height: 1.9; }
+.story-rules { padding: 14px 16px; background: #1e1929; border: 1px solid var(--line); }
+.story-rules > b { display: block; margin-bottom: 9px; color: var(--gold); font-size: 12px; font-weight: 500; }
+.story-rules p { margin-top: 8px; color: var(--muted); font-size: 11.5px; line-height: 1.7; }
+.story-rules p:first-child { margin-top: 0; }
+.story-rules b { color: var(--text); }
+.story-rules em { color: var(--gold-hi); font-style: normal; }
+.story-rules .story-brief { padding-left: 10px; border-left: 2px solid #615071; }
+.story-rules .story-rage { color: var(--gold-hi); }
+.story-stage-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-top: 16px; border-top: 1px solid var(--line); }
+.story-stage-foot > span { color: var(--muted); font-size: 11.5px; }
+@media (max-width: 900px) {
+  .story-stage { padding: 14px 16px 20px; }
+  .story-stage-main { grid-template-columns: 1fr; gap: 18px; padding: 16px 0; }
+  .story-stage-foot { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; }
+}
+
+/* Selection is a real screen: every side shows the whole roster in one readable row.
+   grid-auto-flow: column 让角色数量增加时也只是把卡片挤窄，不会换行掉到首屏之外。 */
+.lobby { width: min(1460px, 100%); padding: 22px 36px 28px; }
+.lobby-top { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+.lobby-top .chapter-label { margin-left: auto; }
+.mode-number { grid-row: span 2; font: 20px var(--font-display); color: var(--gold); align-self: center; }
+.draft-board { display: grid; grid-template-columns: 1fr 65px 1fr; gap: 16px; align-items: stretch; }
+.draft-side { min-width: 0; border-top: 2px solid var(--team); padding-top: 12px; }
+.draft-header { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 11px; margin-bottom: 11px; }
+.draft-header strong { font-family: var(--font-display); font-size: 18px; color: var(--team); }
+/* ★ 逐位的「真人 / 人机」开关：摆在这一位选人面板的上方（2v2 时一侧两个位子＝两个开关） */
+.side-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.control-slot { display: flex; align-items: center; gap: 5px; padding: 3px 6px; border: 1px solid var(--line); background: #1c1727; }
+.control-slot > small { font: 10px var(--font-mono); color: var(--subtle); letter-spacing: .04em; }
+.control-toggle { min-height: 24px; padding: 2px 10px; border: 1px solid var(--line); background: #14111d; color: var(--muted); font: 11px var(--font-mono); }
+.control-toggle:hover { border-color: var(--gold); color: var(--gold-hi); }
+.control-toggle.is-on { border-color: var(--team); color: var(--gold-hi); background: #2b2233; box-shadow: inset 0 -2px var(--team); }
+.control-toggle[aria-pressed="true"] { border-color: var(--team); color: var(--gold-hi); }
+.fighter-roster { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 7px; }
+.draft-pick { position: relative; border: 1px solid var(--line); padding: 0; background: var(--surface); text-align: left; overflow: hidden; min-width: 0; transition: border-color .15s; }
+.draft-pick > img { width: 100%; height: auto; aspect-ratio: 1.25; object-fit: cover; display: block; filter: saturate(.55) brightness(.7); transition: filter .2s; }
+.draft-pick .draft-pick-name { display: block; padding: 6px 7px; font-size: 12px; white-space: nowrap; }
+.draft-pick:hover img, .draft-pick[aria-pressed="true"] img { filter: none; }
+.draft-pick[aria-pressed="true"] { border-color: var(--team); box-shadow: inset 0 -2px var(--team); }
+.draft-pick[aria-pressed="true"]::after { content: '✦'; position: absolute; right: 6px; top: 4px; color: var(--gold-hi); text-shadow: 1px 1px #0d0c14; font-size: 19px; }
+.draft-detail { padding: 16px 0 0; }
+.draft-detail-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.draft-detail h2 { font-size: 25px; }
+.draft-detail .stand-name { font-size: 12px; color: var(--team); }
+.draft-detail .draft-bio { color: var(--muted); min-height: 40px; font-size: 12px; margin: 7px 0 13px; line-height: 1.65; }
+.draft-stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); background: #211b2a; }
+.draft-stats > div { padding: 7px 10px; border-right: 1px solid var(--line); }
+.draft-stats > div:last-child { border-right: none; }
+.draft-stats small { display: block; font-size: 9px; color: var(--muted); }
+.draft-stats b { font: 20px var(--font-display); }
+.draft-skills { display: flex; gap: 12px; margin-top: 11px; }
+.draft-skills > span { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--muted); }
+.draft-skills .ico { width: 13px; height: 13px; color: var(--team); }
+.draft-vs { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 17px; color: var(--gold); }
+.draft-vs > span { font: 40px var(--font-display); }
+.draft-vs > i { width: 1px; height: 70px; background: linear-gradient(var(--gold), transparent); }
+.draft-vs > small { font: 8px/1.7 var(--font-mono); letter-spacing: .14em; text-align: center; color: var(--subtle); }
+.lobby-bottom { display: grid; justify-items: center; gap: 9px; border-top: 1px solid var(--line); margin-top: 25px; padding-top: 20px; }
+#draftHint { font-size: 11px; color: var(--muted); }
+.deploy { min-width: 240px; min-height: 45px; justify-content: space-between; font-size: 16px; }
+.lobby-bottom small { color: var(--subtle); font-size: 10px; }
+/* ---- 2v2（PvP 大厅的开关 + 轮流选人顺序）----
+   默认是 1v1：开关是两颗普通小按钮，#draftOrder 在 1v1 下是 hidden。
+   2v2 时下面这一条会把「P1 ① → P2 ① → P1 ② → P2 ②」摆出来，并标出"轮到谁选"。 */
+.team-pick { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+.team-pick > span { font: 10px var(--font-mono); letter-spacing: .08em; }
+.team-mode { min-height: 30px; padding: 4px 16px; border: 1px solid var(--line-hi); background: #1c1727; color: var(--muted); font: 12px var(--font-mono); }
+.team-mode:hover:not(:disabled) { border-color: var(--gold); color: var(--gold-hi); }
+.team-mode[aria-pressed="true"] { border-color: var(--gold); color: var(--gold-hi); background: #2b2233; box-shadow: inset 0 -2px var(--gold); }
+.team-mode:disabled { opacity: .45; cursor: not-allowed; }
+.draft-order { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.draft-order-title { font-size: 10px; color: var(--subtle); letter-spacing: .08em; }
+.draft-step { display: grid; gap: 1px; min-width: 84px; padding: 4px 9px; border: 1px solid var(--line); background: #1c1727; text-align: left; }
+.draft-step b { font: 11px var(--font-mono); color: var(--muted); }
+.draft-step small { font-size: 10px; color: var(--subtle); }
+.draft-step.is-done b { color: var(--team, var(--gold)); }
+.draft-step.is-turn { border-color: var(--gold); background: #2b2233; }
+.draft-step.is-turn b, .draft-step.is-turn small { color: var(--gold-hi); }
+/* 2v2 时选人页每一侧的"两个角色"两行：点一行＝把上面的名单切给那一行 */
+.draft-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 9px; }
+.draft-slot { display: grid; gap: 2px; padding: 6px 9px; border: 1px solid var(--line); background: #1c1727; text-align: left; min-width: 0; }
+.draft-slot small { font-size: 9px; color: var(--subtle); }
+.draft-slot b { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.draft-slot.is-active { border-color: var(--team); box-shadow: inset 3px 0 var(--team); }
+.draft-slot.is-empty b { color: var(--subtle); }
+.draft-slot.is-turn { border-color: var(--gold); }
+.draft-slot.is-turn small { color: var(--gold-hi); }
+/* ---- 2v2 对局信息栏：一侧**上下两行角色信息**，当前行动的那位高亮 ---- */
+.fighter-bay.is-2v2 { overflow-y: auto; }
+.bay-rows { display: grid; gap: 9px; }
+.side-row { border: 1px solid transparent; border-left: 2px solid var(--line-hi); padding: 6px 0 8px 7px; }
+.side-row.is-acting { border-color: color-mix(in srgb, var(--team) 45%, #3b3140); border-left-color: var(--gold); background: #241d2d; }
+.side-row.is-down { opacity: .55; }
+.side-row-head { display: flex; align-items: center; gap: 7px; }
+.side-row-head .side-row-face { width: 34px; height: 34px; object-fit: cover; object-position: 50% 22%; border: 1px solid var(--line); flex-shrink: 0; filter: saturate(.8); }
+.side-row-copy { min-width: 0; flex: 1 1 auto; }
+.side-row-copy .eyebrow { font: 9px var(--font-mono); color: var(--team); letter-spacing: .06em; }
+.side-row-copy h3 { font-size: 15px; line-height: 1.2; margin: 1px 0; }
+.side-row-copy small { display: block; font-size: 9px; color: var(--muted); }
+.side-row-head > span { font-size: 9px; color: var(--muted); white-space: nowrap; }
+.side-row-head > span.current { color: var(--gold); }
+.side-row .unit-list { margin-top: 6px; }
+.side-row .tether-stat { margin: 4px 0; }
+.side-row .bay-health { padding: 4px 0 4px; }
+/* 主界面音量：图标 + 滑杆 + 百分比，右边小字报告音乐状态（加载失败时能一眼看出） */
+.volume-control { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; margin-right: 14px; padding: 4px 12px 4px 10px; border: 1px solid var(--line); background: #1c1727; }
+.volume-control .volume-icon { color: var(--gold); font-size: 14px; }
+.volume-control input[type="range"] { width: 108px; height: 18px; accent-color: var(--gold); background: transparent; cursor: pointer; }
+.volume-control b { min-width: 34px; color: var(--muted); font: 11px var(--font-mono); text-align: right; }
+.volume-control small { color: var(--subtle); font-size: 10px; white-space: nowrap; }
+.music-switch { padding: 2px 9px; border: 1px solid #55445f; background: #241f30; color: var(--gold); font: 11px var(--font-mono); letter-spacing: .04em; transition: border-color .15s, background .15s; }
+.music-switch:hover, .music-switch:focus-visible { border-color: var(--gold); background: #2f2739; }
+/* 素材缺失时的醒目提示：说明「HTML 必须和 assets 文件夹在一起」，避免只看到占位图形却不知道原因 */
+.art-warning { margin: 16px auto 0; max-width: 900px; padding: 11px 15px; border: 1px solid #b4763a; border-left: 3px solid var(--gold); background: #2e2318; color: #f0dcbc; font-size: 12px; line-height: 1.75; }
+.art-warning b { color: var(--gold-hi); }
+.art-warning code { padding: 0 5px; background: #1b1520; border: 1px solid var(--line); font-size: 11px; }
+/* Native modal dialogs provide focus trapping and an inert background. */
+.dialog { position: fixed; padding: 27px; width: min(460px, calc(100vw - 28px)); max-height: calc(100dvh - 32px); border: 1px solid #7b627f; border-top: 3px solid var(--gold); color: var(--text); background: #1d1828; box-shadow: 8px 8px 0 #090711a0; overflow: auto; overscroll-behavior: contain; }
+/* 遮罩刻意不用 backdrop-filter：对实时重绘的画布做模糊会让弹窗滚动明显卡顿，
+   纯色遮罩观感几乎相同却便宜得多。 */
+.dialog::backdrop { background: #090611d9; }
+.dialog.wide { width: min(790px, calc(100vw - 28px)); }
+.dialog h2 { font-size: 31px; margin: 9px 0 13px; }
+.dialog p { color: var(--muted); line-height: 1.8; font-size: 13px; }
+.dialog-top { display: flex; justify-content: space-between; align-items: center; }
+.dialog-top .icon-btn { margin: -10px -12px -5px 0; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
+.dialog-lead { margin-bottom: 15px; }
+/* ★ 战斗中的「关卡机制」弹窗（工具栏那个按钮）：
+   文案和剧情页右边的「本关规则」是同一份（hud.js 的 specialRulesHtml），
+   但这里是 .dialog 里面，样式必须写在 `.dialog p` **之后**，
+   否则 `.story-special` 的金色会被 `.dialog p` 的灰色盖掉（选择器权重相同，后写的赢）。 */
+.chapter-rules { padding: 13px 15px; background: #1e1929; border: 1px solid var(--line); }
+.chapter-rules .story-special { color: #dcc9a4; font-size: 12.5px; }
+.chapter-rules .story-special b { color: var(--gold-hi); }
+.chapter-rules .story-special-title { color: #c9a24a; }
+.help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; margin: 20px 0; }
+/* 剧情档案：顶部目录（按话数分章）+ 翻页条 + 一次一章的正文 */
+.story-toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 14px; }
+.story-toc button { padding: 3px 9px; border: 1px solid var(--line); background: #241f30; color: var(--muted); font-size: 11px; }
+.story-toc button:hover, .story-toc button:focus-visible { border-color: var(--gold); color: var(--gold); background: #2f2739; }
+.story-toc button.is-current { border-color: var(--gold); color: #14101c; background: var(--gold); }
+/* 翻页条：贴在弹窗顶部，读到哪都不用再滚回去找按钮 */
+.story-pager { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 4px; padding: 9px 0; background: #1d1828; border-bottom: 1px solid var(--line); }
+.story-pager .btn { flex: 0 0 auto; }
+.story-pager .btn[disabled] { opacity: .38; }
+.story-position { flex: 1 1 auto; min-width: 0; text-align: center; color: var(--gold); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.story-list { margin: 14px 0 0; display: grid; gap: 18px; }
+.story-list article { border-left: 2px solid #615071; padding-left: 14px; scroll-margin-top: 10px; }
+.story-list article[hidden] { display: none; }
+.story-list b { display: block; color: var(--gold); font-size: 13px; font-weight: 500; }
+.story-range { display: block; color: var(--subtle); font: 10px var(--font-mono); margin: 2px 0 7px; }
+.story-list p { font-size: 12.5px; line-height: 1.85; margin-top: 7px; color: var(--text); }
+/* 被藤蔓缠住的标记（角色舱单位卡里的小图标） */
+.vine-mark { color: #8fd39a; }
+.vine-mark .ico { width: 13px; height: 13px; }
+.help-grid article { border-left: 2px solid #615071; padding-left: 12px; }
+.help-grid b { color: var(--gold); font-size: 12px; font-weight: 500; }
+.help-grid p { font-size: 12px; margin-top: 8px; }
+.key-guide { display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 15px 0; border-top: 1px solid var(--line); margin: 6px 0 15px; color: var(--muted); font-size: 11px; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 17px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.setting-row b { font-size: 14px; font-weight: 500; }
+.setting-row small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+.setting-row input { width: 21px; height: 21px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
+#settingsDialog > p { font-size: 11px; margin-top: 20px; }
+.menu-options { display: grid; gap: 12px; margin-top: 25px; }
+#fullLog { max-height: 55dvh; overflow-y: auto; padding-right: 8px; }
+.log-row { display: grid; grid-template-columns: 38px 28px 1fr; gap: 10px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.log-row .log-turn { font: 10px var(--font-mono); color: var(--subtle); }
+.log-row .ico { width: 17px; height: 17px; color: var(--gold); }
+.log-row.hit .ico { color: var(--danger); }
+.log-row.heal .ico { color: var(--hp); }
+.result-dialog { width: min(680px, calc(100vw - 28px)); padding: 0; overflow: hidden; }
+#resultArt { height: 250px; background-size: cover; background-position: center 35%; position: relative; }
+#resultArt::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, #1d1828, transparent 75%); }
+.result-content { position: relative; padding: 0 28px 28px; margin-top: -30px; }
+#resultTitle { font-size: 44px; color: var(--gold-hi); margin: 8px 0 0; }
+#resultStats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+.result-stat { border-top: 1px solid var(--line-hi); padding-top: 10px; }
+.result-stat b { display: block; font: 26px var(--font-display); color: var(--text); }
+.result-stat span { font-size: 11px; color: var(--muted); }
+.skill-tooltip { position: fixed; z-index: 50; padding: 13px 15px; width: min(340px, calc(100vw - 20px)); background: #292031; border: 1px solid #896b91; box-shadow: 4px 4px #0b0911d9; pointer-events: none; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.skill-tooltip h3 { color: var(--gold-hi); font-size: 18px; margin-bottom: 5px; }
+.skill-tooltip .tooltip-meta { font-size: 10px; color: var(--gold); margin-bottom: 8px; }
+#cutin { position: absolute; width: min(95%, 720px); height: min(63%, 350px); top: 50%; left: 50%; translate: -50% -50%; z-index: 10; pointer-events: none; border-block: 3px solid var(--gold); background-size: cover; background-position: center; clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%); box-shadow: 0 6px 0 #0c081a; }
+#cutin.play { animation: cutinIn 1.05s both; }
+#cutin::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #171025e6, transparent 75%); }
+#cutin::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(-8deg, transparent 0 25px, #e9e0f029 26px 27px, transparent 28px 45px); mask-image: linear-gradient(90deg, #000, transparent 65%); }
+.cutin-copy { position: absolute; top: 48%; left: 8%; z-index: 1; }
+.cutin-copy span { display: block; font: 10px var(--font-mono); letter-spacing: .16em; color: var(--gold); }
+.cutin-copy b { font: clamp(25px, 3vw, 50px) var(--font-display); color: var(--gold-hi); text-shadow: 3px 3px #170e23; display: block; }
+.cutin-copy em { display: block; color: #dacbdf; font-family: var(--font-display); font-size: 22px; font-style: normal; }
+@keyframes cutinIn { 0% { transform: translateX(-20%) skewX(-5deg); opacity: 0; } 15%, 75% { transform: none; opacity: 1; } 100% { transform: translateX(20%); opacity: 0; } }
+#boot { position: fixed; inset: 0; background: #10101b; z-index: 100; display: flex; flex-direction: column; gap: 15px; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+#boot > b { color: var(--gold); font: 18px var(--font-mono); letter-spacing: .2em; }
+.boot-star { font-size: 52px; color: var(--gold); animation: bootPulse 1.4s infinite alternate; }
+@keyframes bootPulse { to { opacity: .4; } }
+.noscript { position: fixed; inset: 45% 0 auto; z-index: 101; color: var(--gold); text-align: center; }
+@media (min-width: 1101px) and (max-height: 850px) {
+  #app { grid-template-rows: 41px minmax(0, 1fr) 128px auto; gap: 9px; }
+  .masthead { padding-bottom: 8px; }
+  .brand-star { font-size: 31px; }
+  .wordmark { font-size: 26px; }
+  .bay-heading { padding: 4px 10px; }
+  .bay-body { padding: 0 9px 5px; }
+  .bay-portrait { min-height: 95px; }
+  .bay-health { padding-bottom: 6px; }
+  .unit-option { min-height: 41px; padding: 2px 5px; gap: 5px; }
+  .unit-mini { height: 30px; width: 25px; }
+  .unit-name { font-size: 12px; }
+  .unit-stats { gap: 6px; font-size: 10px; }
+  .bay-skill { padding: 3px 0; min-height: 25px; }
+  .bay-skill b { font-size: 11px; }
+  .bay-skill small { font-size: 9px; }
+  .bay-name h2 { font-size: 24px; }
+  .hp-value { font-size: 23px; }
+  .action-center { padding-block: 6px; grid-template-rows: 20px minmax(0, 1fr) 22px; gap: 3px; }
+  .command { grid-template-columns: 19px minmax(0, 1fr); gap: 5px; padding: 7px 6px 5px; }
+  .command .ico { width: 19px; height: 19px; }
+  .command-name { font-size: 12px !important; }
+  .command .command-meta { font-size: 10px; }
+  .command kbd { display: none; }
+  .actor-summary { padding: 8px; gap: 5px; }
+  .actor-summary .actor-img { height: 78px; width: 42px; }
+  .actor-copy h3 { font-size: 17px; }
+  .turn-console { padding: 7px 10px; }
+  .ap-pip { width: 20px; }
+  .board-legend { gap: 10px; font-size: 9px; }
+  #info, .target-preview { font-size: 11px; }
+  .lobby { padding-top: 15px; padding-bottom: 15px; }
+  .lobby-top { padding-bottom: 10px; }
+  .title-top { padding: 14px 24px 10px; }
+  .title-main { padding: 6px 24px; }
+  .title-sub { margin-bottom: 22px; }
+  .title-foot { padding: 10px 24px 14px; }
+  .draft-header { margin-bottom: 8px; }
+  .draft-detail { padding-top: 12px; }
+  .draft-detail .draft-bio { min-height: 36px; margin: 6px 0 9px; }
+  .lobby-bottom { margin-top: 14px; padding-top: 12px; }
+}
+@media (max-width: 1100px) {
+  body { display: block; }
+  #app { width: 100%; height: 100dvh; padding: 12px; grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 10px; }
+  .masthead { min-height: 50px; }
+  .match-heading { border: none; padding: 0; gap: 7px; }
+  .match-heading .chapter-label { display: none; }
+  .toolbar { gap: 2px; }
+  .arena { grid-template-columns: 1fr 1fr; grid-template-rows: 108px minmax(0, 1fr); grid-template-areas: 'left right' 'board board'; gap: 10px; }
+  .board-stage { grid-area: board; grid-template-rows: 24px minmax(0, 1fr) 25px; }
+  .board-pan-hint { display: inline; color: var(--muted); font-size: 9px; }
+  #boardWell { display: block; overflow: auto; height: 100%; max-height: none; scrollbar-color: var(--line-hi) var(--ink); scrollbar-width: thin; }
+  #board { margin: 0 auto; }
+  #sideP1 { grid-area: left; }
+  #sideP2 { grid-area: right; }
+  .fighter-bay { min-height: 0; display: grid; grid-template-columns: 76px minmax(0, 1fr); grid-template-rows: 26px minmax(0, 1fr); }
+  .bay-heading { grid-column: span 2; padding: 4px 9px; }
+  .compact-name { display: inline; color: var(--text); font-family: var(--font-body); }
+  .player-label, .bay-name, .bay-portrait::after, .bay-body > .unit-list, .bay-body > .tether-stat, .bay-body > .bay-skills { display: none; }
+  .bay-portrait { grid-column: 1; grid-row: 2; min-height: 0; height: 100%; }
+  .bay-body { grid-column: 2; grid-row: 2; padding: 2px 12px; position: relative; }
+  .bay-body .status-tags { position: absolute; bottom: 1px; right: 4px; left: 4px; flex-wrap: nowrap; overflow: hidden; }
+  .bay-body .status-tag { padding: 0 3px; margin: 0; font-size: 8px; white-space: nowrap; }
+  /* 2v2 在窄屏：这一侧没有大立绘（上面那套是"左立绘 + 右信息"的两列），
+     所以让两行角色信息直接占满整个面板，并且和 1v1 一样只留血量/行动点/状态标签
+     ——单位卡与技能按钮在底部的指令条里（跟着当前行动的那位走）。 */
+  .fighter-bay.is-2v2 { grid-template-columns: minmax(0, 1fr); }
+  .fighter-bay.is-2v2 .bay-rows { grid-column: 1; }
+  .fighter-bay.is-2v2 .side-row .unit-list,
+  .fighter-bay.is-2v2 .side-row .tether-stat,
+  .fighter-bay.is-2v2 .side-row .bay-skills,
+  .fighter-bay.is-2v2 .bay-heading .compact-name { display: none; }
+  .fighter-bay.is-2v2 .side-row { padding: 3px 0 4px 6px; }
+  .fighter-bay.is-2v2 .side-row-head .side-row-face { width: 26px; height: 26px; }
+  .fighter-bay.is-2v2 .side-row-copy h3 { font-size: 13px; }
+  .bay-health { padding: 3px 0; }
+  .unit-mini { height: 32px; }
+  .unit-option { min-height: 42px; }
+  .unit-stats { gap: 10px; }
+  .bay-skills { grid-template-columns: 1fr; }
+  .action-dock { grid-template-columns: minmax(0, 1fr) 190px; grid-template-areas: 'actor turn' 'commands commands'; gap: 0; position: relative; z-index: 15; }
+  .actor-summary { grid-area: actor; min-height: 79px; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+  .actor-summary .actor-img { height: 68px; width: 40px; }
+  .actor-copy h3 { display: inline-block; margin: 0 8px; }
+  .actor-copy small { display: inline; }
+  .actor-copy .actor-distance { display: none; }
+  .actor-shortcuts { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
+  .actor-shortcuts button { min-height: 25px; padding: 2px 10px; border: 1px solid var(--line-hi); color: var(--muted); background: #211a2b; font-size: 11px; }
+  .actor-shortcuts button[aria-pressed="true"] { color: var(--gold); border-color: var(--gold); }
+  .actor-shortcuts button:disabled { opacity: .5; }
+  .actor-shortcuts > span { color: var(--muted); font-size: 10px; }
+  .turn-console { grid-area: turn; padding: 7px 12px; border-bottom: 1px solid var(--line); }
+  .ap-heading, #turnNote { display: none; }
+  .ap-meter { margin-bottom: 6px; }
+  .ap-pip { width: 20px; height: 8px; }
+  .end-turn { min-height: 31px; padding: 4px 10px; }
+  .action-center { grid-area: commands; padding: 7px 12px; grid-template-rows: 20px 54px 23px; }
+  .command { padding: 7px; }
+  .footer-brand { display: none; }
+  .lobby { padding: 20px; }
+  .draft-board { grid-template-columns: 1fr 35px 1fr; gap: 10px; }
+  .draft-vs > span { font-size: 30px; }
+  .draft-detail-heading { display: block; }
+  .draft-pick .draft-pick-name { font-size: 11px; }
+  .draft-stats > div { padding: 6px 8px; }
+}
+@media (max-width: 600px) {
+  #app { padding: 8px; gap: 8px; }
+  .masthead { gap: 8px; }
+  .wordmark { font-size: 23px; gap: 6px; }
+  .brand-star { font-size: 28px; }
+  .brand-small { font-size: 6px; letter-spacing: .1em; }
+  .toolbar .icon-btn { width: 30px; height: 34px; flex-basis: 30px; }
+  .toolbar .btn { font-size: 10px; padding: 5px 7px; min-height: 32px; }
+  .match-heading { display: none; }
+  #connection { position: fixed; bottom: 230px; left: 12px; background: var(--surface); padding: 6px; z-index: 20; }
+  .board-legend { gap: 9px; font-size: 9px; }
+  .board-legend > span:last-of-type { display: none; }
+  .board-legend .text-btn { font-size: 9px; }
+  .arena { gap: 10px; }
+  .bay-heading { padding: 5px 7px; font-size: 9px; }
+  .bay-heading strong { font-size: 11px; }
+  .bay-name { left: 9px; }
+  .bay-name h2 { font-size: 24px; }
+  .bay-body { padding: 2px 6px; }
+  .bay-portrait { min-height: 0; }
+  .bay-name .roman { font-size: 7px; }
+  .bay-name .archetype { font-size: 9px; }
+  .hp-value { font-size: 23px; }
+  .hp-line .hp-caption { font-size: 9px; }
+  .hp-line .hp-caption .ico { display: none; }
+  .unit-option { padding: 3px; gap: 4px; min-height: 44px; }
+  .unit-mini { width: 23px; height: 33px; }
+  .unit-name { font-size: 10px; }
+  .unit-name small { font-size: 8px; margin-right: 3px; }
+  .unit-stats { gap: 5px; font-size: 9px; }
+  .unit-stats .ico { width: 9px; height: 9px; }
+  .unit-key { display: none; }
+  .bay-skill { gap: 4px; }
+  .bay-skill .ico { width: 12px; height: 12px; }
+  .bay-skill b { font-size: 10px; }
+  .bay-skill small { font-size: 8px; }
+  .tether-stat { font-size: 9px; }
+  .fighter-bay { min-height: 0; grid-template-columns: 41px minmax(0, 1fr); }
+  .action-dock { grid-template-columns: minmax(0, 1fr) 128px; }
+  .actor-summary { padding: 5px; gap: 3px; }
+  .actor-summary .actor-img { width: 28px; height: 54px; }
+  .actor-copy h3 { display: block; font-size: 17px; margin: 3px 0; }
+  .actor-copy small { font-size: 9px; }
+  .actor-copy .actor-distance { display: none; }
+  .actor-shortcuts { gap: 4px; }
+  .actor-shortcuts button { padding: 2px 7px; font-size: 10px; }
+  .actor-shortcuts > span { font-size: 9px; }
+  .actor-copy .eyebrow { font-size: 8px; }
+  .turn-console { padding: 7px 8px; }
+  .ap-pip { width: 15px; }
+  .ap-pips { gap: 3px; }
+  .ap-value { font-size: 14px; }
+  .action-center { padding: 6px; gap: 4px; grid-template-rows: 21px 59px 28px; }
+  #actionTitle { display: none; }
+  .command-grid { gap: 4px; }
+  .command { padding: 5px 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; }
+  .command .ico { width: 17px; height: 17px; }
+  .command .command-name { font-size: 9px; }
+  .command .command-meta { font-size: 8px; }
+  .command kbd { display: none; }
+  #info { font-size: 10px; white-space: normal; line-height: 1.3; overflow: auto; }
+  .target-preview { font-size: 10px; gap: 5px; }
+  .target-preview .damage-preview { font-size: 13px; }
+  .target-preview .preview-defense { display: none; }
+  .keyboard-hint { display: none; }
+  .lobby { padding: 16px; }
+  .lobby-top .chapter-label { display: none; }
+  .lobby-top .btn { font-size: 11px; padding: 5px 9px; }
+  .title-top { flex-wrap: wrap; gap: 10px; padding: 12px 16px 10px; }
+  .title-top .chapter-label { display: none; }
+  .title-main { padding: 8px 16px; }
+  .title-menu { width: 100%; }
+  .title-mode { padding: 11px 14px; }
+  .title-foot { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 16px 16px; }
+  .mode-number { font-size: 18px; }
+  .draft-board { grid-template-columns: 1fr; gap: 22px; }
+  .draft-vs { display: none; }
+  .draft-pick .draft-pick-name { font-size: 11px; padding: 5px; }
+  .draft-detail-heading { display: flex; }
+  .draft-detail { padding-top: 12px; }
+  .draft-detail h2 { font-size: 22px; }
+  .draft-detail .draft-bio { font-size: 11px; min-height: 0; }
+  .lobby-bottom { margin-top: 25px; }
+  .dialog { padding: 20px; }
+  .dialog h2 { font-size: 27px; }
+  .help-grid { grid-template-columns: 1fr; }
+  .dialog-actions { flex-wrap: wrap; }
+  #resultArt { height: 185px; }
+  .result-content { padding: 0 20px 24px; }
+  #resultTitle { font-size: 36px; }
+  #cutin { position: fixed; width: 100vw; height: 240px; top: 35%; left: 50%; z-index: 25; }
+}
+@media (min-width: 1600px) and (min-height: 851px) {
+  .bay-heading { font-size: 11px; padding-block: 8px; }
+  .bay-heading strong { font-size: 13px; }
+  .bay-body { padding: 0 14px 13px; }
+  .hp-value { font-size: 32px; }
+  .hp-line .hp-caption { font-size: 12px; }
+  .bay-ap { font-size: 11px; }
+  .bay-ap b { font-size: 12px; }
+  .unit-option { min-height: 53px; }
+  .unit-name { font-size: 14px; }
+  .unit-stats { font-size: 11px; gap: 12px; }
+  .unit-mini { height: 41px; width: 33px; }
+  .tether-stat { font-size: 12px; margin-block: 9px; }
+  .bay-skill { min-height: 32px; }
+  .bay-skill b { font-size: 13px; }
+  .bay-skill small { font-size: 11px; }
+  .command .command-name { font-size: 14px; }
+  .command .command-meta { font-size: 11px; }
+  #info, .target-preview { font-size: 12px; }
+  .end-turn { font-size: 16px; min-height: 40px; }
+  .ap-value { font-size: 21px; }
+  .ap-heading { font-size: 12px; }
+  .ap-pip { width: 29px; height: 12px; }
+  #turnNote { font-size: 10px; }
+  .board-legend { font-size: 11px; }
+}

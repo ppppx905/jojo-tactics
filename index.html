@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10101b">
+  <meta name="description" content="星尘战棋：使者与替身的战术对决。剧情模式与本地对战，每个角色位可分别设成真人或电脑。">
+  <title>JOJO 星尘战棋 · STARDUST TACTICS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23e5bf70' d='m24 2 5 15 17 1-13 10 4 17-13-10-13 10 4-17L2 18l17-1Z'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/smiley-subset.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="src/ui/tokens.css">
+  <link rel="stylesheet" href="src/ui/layout.css">
+</head>
+<body>
+  <div id="boot" role="status"><span class="boot-star">✦</span><b>STARDUST TACTICS</b><span id="bootText">正在准备战场</span><button id="bootRetry" class="btn gold" hidden>重新加载</button></div>
+  <noscript><p class="noscript">星尘战棋需要启用 JavaScript 才能运行。</p></noscript>
+
+  <section id="title" class="title-screen" hidden aria-label="星尘战棋 主菜单">
+    <div class="title-backdrop" aria-hidden="true"><img src="assets/out/lobby/title-bg.webp" alt="" width="1536" height="1024" decoding="async"></div>
+    <header class="title-top"><span class="wordmark"><span class="brand-star">✦</span><span>JOJO<span class="brand-small">STARDUST TACTICS</span></span></span><span class="chapter-label">第三部 / 星尘斗士</span><span class="volume-control"><span class="volume-icon" aria-hidden="true">♪</span><input id="volumeRange" type="range" min="0" max="100" step="5" value="80" aria-label="音量" title="音量"><b id="volumeValue">80%</b><button id="musicBtn" class="music-switch" type="button" aria-label="切换主界面音乐" title="切换主界面音乐：自动轮流 / Setting Off / Stand Proud / 关闭">自动轮流</button><small id="musicState"></small></span><button class="btn quiet" data-story>剧情档案 <span>▸</span></button><button class="btn quiet" data-help>玩法指南 <span>?</span></button></header>
+    <div class="title-main"><p class="eyebrow">THE FATE OF STARDUST</p><h1 id="titleHeading" class="title-name">星尘战棋</h1><p class="title-sub">命运，由你落子</p><nav class="title-menu" aria-label="选择游戏模式"><button type="button" class="title-mode" data-title-mode="story"><span class="mode-number">01</span><span class="title-mode-text"><b>剧情模式</b><small>第一章 · 星尘的起点</small></span></button><button type="button" class="title-mode" data-mode="hotseat" aria-pressed="true"><span class="mode-number">02</span><span class="title-mode-text"><b>对战</b><small>每个位子各自设成真人或人机</small></span></button></nav></div>
+    <footer class="title-foot"><span class="chapter-label">CAIRO · 1999</span><small>选择模式后进入角色选择 · 本地对局，无需账号</small></footer>
+  </section>
+
+  <section id="storyMenu" class="story-menu-screen" hidden aria-label="剧情模式章节">
+    <header class="story-menu-top"><button class="btn quiet" id="storyMenuBack"><span>◂</span> 返回标题</button><span class="chapter-label">STORY MODE · 第三部 星尘斗士</span></header>
+    <div class="story-menu-head"><p class="eyebrow">CHOOSE A CHAPTER</p><h2>剧情模式</h2><p class="story-menu-lead">通关一章即算解锁，之后可以直接跳回去重看。灰色的章节尚未解锁。</p></div>
+    <ol class="story-chapters" id="storyChapters"></ol>
+  </section>
+
+  <section id="storyStage" class="story-stage" hidden aria-label="剧情模式">
+    <header class="story-stage-top"><button class="btn quiet" id="storyBack"><span>◂</span> 返回标题</button><span class="chapter-label" id="storyStageLabel">第一章</span><span class="chapter-label" id="storyStageRange"></span></header>
+    <div class="story-stage-main">
+      <article class="story-script"><p class="eyebrow" id="storyStageEyebrow">CHAPTER 01</p><h2 id="storyStageTitle"></h2><div id="storyStageBody" class="story-script-body"></div></article>
+      <aside class="story-rules"><b>本关规则</b><div id="storyStageRules"></div></aside>
+    </div>
+    <footer class="story-stage-foot"><span id="storyStageHint">读完剧情后开始对决。</span><button class="btn gold" id="storyStageNext">继续 <span>▸</span></button></footer>
+  </section>
+
+  <section id="lobby" class="lobby" hidden aria-label="选择对战角色">
+    <header class="lobby-top"><button class="btn quiet" id="backToTitle"><span>◂</span> 返回标题</button><span class="chapter-label" id="lobbyLabel">选择双方角色</span><button class="btn quiet" data-story>剧情档案 <span>▸</span></button><button class="btn quiet" data-help>玩法指南 <span>?</span></button></header>
+    <div class="draft-board"><section class="draft-side p1" id="draftP1" aria-label="P1 选择角色"></section><div class="draft-vs" aria-hidden="true"><span>VS</span><i></i><small>STAND<br>BY ME</small></div><section class="draft-side p2" id="draftP2" aria-label="P2 选择角色"></section></div>
+    <div class="lobby-bottom"><div class="team-pick" role="group" aria-label="对战人数"><span>对战人数</span><button type="button" class="team-mode" id="teamSize1" data-team-size="1v1" aria-pressed="true">1v1</button><button type="button" class="team-mode" id="teamSize2" data-team-size="2v2" aria-pressed="false" title="每方两个角色，共 8 枚棋子（交替出手）">2v2</button></div><div class="team-pick" id="mapPick" role="group" aria-label="地图"></div><div id="draftOrder" class="draft-order" aria-live="polite" hidden></div><span id="draftHint">选择双方角色，准备开始对战。</span><small id="mapNote"></small><button class="btn gold deploy" id="startBtn">进入战场 <span>↗</span></button><small id="buildTag">本地对局 · 无需账号</small></div>
+    <p id="artWarning" class="art-warning" role="status" hidden></p>
+  </section>
+
+  <main id="app" hidden>
+    <header class="masthead"><div class="wordmark"><span class="brand-star">✦</span><span>JOJO<span class="brand-small">STARDUST TACTICS</span></span></div><div class="match-heading"><span class="chapter-label">星尘斗士 · 战术对决</span><span id="modeLabel" class="mode-label">双人同屏</span></div><nav class="toolbar" aria-label="游戏工具"><span id="connection" hidden></span><button class="icon-btn" id="muteBtn" aria-label="静音" title="音效"></button><button class="icon-btn" id="settingsBtn" aria-label="显示设置" title="显示设置"></button><button class="icon-btn" id="rulesBtn" aria-label="关卡机制" title="关卡机制（重看这一关的特殊规则）" hidden></button><button class="icon-btn" data-story aria-label="剧情档案" title="剧情档案"></button><button class="icon-btn" data-help aria-label="玩法指南" title="玩法指南"></button><button class="btn quiet" id="menuBtn">对局菜单</button></nav></header>
+
+    <section class="arena" aria-label="对战区域">
+      <aside class="fighter-bay p1" id="sideP1" aria-label="P1 角色与实时状态"></aside>
+      <section id="center" class="board-stage" aria-label="战场">
+        <div class="board-head"><span class="eyebrow">CAIRO · 黄昏遗迹</span><span class="board-pan-hint">滑动查看战场</span><span class="round-label" id="roundLabel">ROUND <b>01</b></span></div>
+        <div id="boardWell"><canvas id="board" tabindex="0" role="application" aria-label="战场棋盘，18列13行。方向键移动光标，Enter选择或行动，Escape取消。" aria-describedby="boardReadout">当前浏览器不支持 Canvas，请使用现代浏览器。</canvas><div id="turnBanner" aria-hidden="true"></div><div id="stageBanner" role="status" aria-live="polite"></div><div id="bark" role="status" aria-live="polite" hidden></div><div id="cutin" aria-hidden="true" hidden></div></div>
+        <div class="board-legend" aria-label="棋盘图例"><span class="skip-hint" title="点棋盘以外的空白处，跳过正在播的台词、提示或大字横幅。键盘不受影响。">点空白处跳过演出</span><span><i class="legend-move">▲</i> 可移动</span><span><i class="legend-attack"></i> 攻击范围</span><span><i class="legend-target"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1v5m0 12v5M1 12h5m12 0h5" stroke="currentColor" stroke-width="2"/></svg></i> 可攻击</span><span><i class="legend-item">◆</i> 道具 · 走上去就捡走</span><span><i class="legend-link">⋯</i> 同伴连携</span><button id="cancelBtn" class="text-btn">取消 <kbd>Esc</kbd></button></div>
+        <p id="boardReadout" class="sr-only" role="status"></p>
+      </section>
+      <aside class="fighter-bay p2" id="sideP2" aria-label="P2 角色与实时状态"></aside>
+    </section>
+
+    <section class="action-dock" aria-label="行动指令">
+      <div id="actorSummary" class="actor-summary"></div>
+      <div class="action-center"><div class="action-heading"><span id="actionTitle">行动指令</span><div id="targetPreview" class="target-preview" aria-live="off"></div><span class="keyboard-hint">1 / 2 选择单位 · Q W E 技能</span></div><div id="skillbar" class="command-grid"></div><div id="info" role="status" aria-live="polite"></div></div>
+      <div class="turn-console"><div id="apDisplay"></div><button id="btnEnd" class="btn gold end-turn">结束回合 <span>→</span></button><span id="turnNote"></span></div>
+    </section>
+    <footer class="battle-footer"><div class="log-panel" id="logPanel"><div class="log-panel-top"><button class="text-btn" id="logBtn" aria-expanded="false">战斗记录 <span>▾</span></button><span class="log-panel-hint">全部流程 · 点标题展开</span><button class="text-btn" id="logFullBtn">全屏 ↗</button></div><div id="fullLogInline" class="log-scroll" role="log" tabindex="0" aria-label="战斗记录（全部流程）"></div></div><span class="footer-brand">STAND TOGETHER.</span></footer>
+  </main>
+
+  <dialog id="helpDialog" class="dialog wide" aria-labelledby="helpTitle"><div class="dialog-top"><span class="eyebrow">FIELD MANUAL</span><button class="icon-btn" data-close aria-label="关闭玩法指南">×</button></div><h2 id="helpTitle">战场手册</h2><p class="dialog-lead">选择使者或替身 → 查看落点和目标 → 行动 → 结束回合。</p><div class="help-grid"><article><b>01 / 行动与连携</b><p>每回合 3 AP（部分技能会额外增加）。一次移动或普攻消耗 1 AP；移动步数见单位卡。使者无法普攻，个别技能例外。替身与使者共享 HP，任一单位受伤都会扣除共享生命。</p><p>落点必须在同伴 2 格内（个别角色更远）。路径中的岩石、单位与宝石柱不可穿越。</p><p>「对战」里可以开「2v2」：每方两个角色、各自一条血、各自每回合 3 AP，棋子共 8 枚；出手顺序是 P1 第一个角色 → P2 第一个角色 → P1 第二个角色 → P2 第二个角色，一方两个角色都倒下才判负。</p><p>每个角色位都能单独设成<b>真人</b>或<b>人机</b>（选人页每一位上方那颗开关）：电脑位会自己行动、不用你点，真人位等你的操作；四个位子全设人机就是观战，两边自己打完。电脑位也由你替它选角色。</p></article><article><b>02 / 战术地形</b><p>岩石阻挡移动，相邻单位 +1 防御；草丛 +3 防御，进入后下个对手回合结束时消失。恢复点 +10 HP，满血时保留；毒沼在落点结算 −3 HP。</p><p>敌方火焰在经过时造成 3 伤害并叠灼烧，每次移动只结算一次。己方火焰安全。</p><p><b>可拾取道具</b>（菱形小图标，五种颜色各一种）：<b>任何棋子走上去就自动捡走</b>，没有额外消耗。开局场上摆 2 个，之后每 3 个回合在空地再刷 1 个，场上最多同时存在 4 个。力量＝攻击 +2、护盾＝防御 +1、疾风＝移动 +1、连携＝连携距离 +1（这四种本局永久，按角色记账，本体与替身一起吃到）；时间＝当场 +1 行动点。没有替身棋子的角色捡到连携会改成移动 +1。加成会以「力量 · 攻击 +2」这样的标签显示在角色状态栏里。</p></article><article><b>03 / 技能与状态</b><p>技能按钮固定显示名称、消耗与冷却。瞄准可取消且不扣 AP；火焰首格落地后扣除消耗，已铺火焰不能撤销。最多连续铺 3 格，可提前完成。</p><p>灼烧最多 2 层，每层在己方回合结束扣 1 HP，治疗减半并向上取整。宝石柱会挡路，并给紧贴的己方 +1 防御、给该方替身 +1 伤害，只要有柱子存在，该方在自己的回合开始时回复 1 HP（不叠加）；柱子被打碎只损失它本身，不会让任何一方掉血。</p></article><article><b>04 / 时间停止</b><p>每局一次，由替身释放、不消耗行动点：发动后自动跳过对方下个行动回合，冷却与回合结束状态照常结算。个别角色的发动条件不同，技能说明里会写。</p></article></div><div class="key-guide"><span><kbd>1</kbd> 使者</span><span><kbd>2</kbd> 替身</span><span><kbd>Q W E</kbd> 技能</span><span><kbd>↑ ↓ ← →</kbd> 棋盘光标</span><span><kbd>Enter</kbd> 落子</span><span><kbd>Esc</kbd> 取消瞄准</span><span><kbd>Space</kbd> 结束回合</span></div><button class="btn gold" data-close>准备好了</button></dialog>
+
+  <dialog id="storyDialog" class="dialog wide" aria-labelledby="storyTitle"><div class="dialog-top"><span class="eyebrow">STORY ARCHIVE</span><button class="icon-btn" data-close aria-label="关闭剧情档案">×</button></div><h2 id="storyTitle">星尘斗士 · 剧情档案</h2><div id="storyBody"></div><button class="btn gold" data-close>合上档案</button></dialog>
+
+  <dialog id="settingsDialog" class="dialog" aria-labelledby="settingsTitle"><div class="dialog-top"><span class="eyebrow">PREFERENCES</span><button class="icon-btn" data-close aria-label="关闭显示设置">×</button></div><h2 id="settingsTitle">战场设置</h2><label class="setting-row"><span><b>游戏音效</b><small>程序合成的行动与命中反馈</small></span><input type="checkbox" id="soundSetting" checked></label><label class="setting-row"><span><b>减少动态效果</b><small>简化技能演出、镜头与脉冲动画</small></span><input type="checkbox" id="motionSetting"></label><label class="setting-row"><span><b>高对比阵营色</b><small>蓝 / 橙配色，始终保留 P1 / P2 文字与形状</small></span><input type="checkbox" id="contrastSetting"></label><p class="subtle">设置保存在当前浏览器，下次打开继续使用。</p></dialog>
+
+  <dialog id="rulesDialog" class="dialog" aria-labelledby="rulesTitle"><div class="dialog-top"><span class="eyebrow">CHAPTER RULES</span><button class="icon-btn" data-close aria-label="关闭关卡机制">×</button></div><h2 id="rulesTitle">这一关的机制</h2><p class="dialog-lead" id="rulesLead"></p><div id="rulesBody" class="chapter-rules"></div><button class="btn gold" data-close>知道了</button></dialog>
+
+  <dialog id="menuDialog" class="dialog" aria-labelledby="menuTitle"><div class="dialog-top"><span class="eyebrow">MATCH MENU</span><button class="icon-btn" data-close aria-label="关闭对局菜单">×</button></div><h2 id="menuTitle">对局菜单</h2><p class="subtle">菜单打开时，电脑暂停行动。</p><div class="menu-options"><button class="btn gold" data-close>继续对局</button><button class="btn" id="restartBtn">重新选人</button><button class="btn danger" id="resignBtn">认输</button></div></dialog>
+
+  <dialog id="confirmDialog" class="dialog" aria-labelledby="cfTitle" aria-describedby="cfBody"><span class="eyebrow">CONFIRM ACTION</span><h2 id="cfTitle">确认操作</h2><p id="cfBody"></p><div class="dialog-actions"><button class="btn" id="cfCancel">取消</button><button class="btn gold" id="cfOk">确认</button></div></dialog>
+  <dialog id="logDialog" class="dialog wide" aria-labelledby="logTitle"><div class="dialog-top"><span class="eyebrow">BATTLE RECORD</span><button class="icon-btn" data-close aria-label="关闭战斗记录">×</button></div><h2 id="logTitle">战斗记录</h2><div id="fullLog" role="log" tabindex="0"></div></dialog>
+  <dialog id="resultDialog" class="dialog result-dialog" aria-labelledby="resultTitle"><div id="resultArt" aria-hidden="true"></div><div class="result-content"><span class="eyebrow">BATTLE COMPLETE</span><h2 id="resultTitle"></h2><p id="resultReason"></p><div id="resultStats"></div><div class="dialog-actions"><button id="rematchBtn" class="btn gold">再战一局</button><button id="newMatchBtn" class="btn">重新选人</button></div></div></dialog>
+  <div id="skillTooltip" class="skill-tooltip" role="tooltip" hidden></div>
+  <script type="module" src="src/main.js"></script>
+  <script>window.addEventListener('load',()=>{setTimeout(()=>{if(!window.__jojoReady){document.getElementById('bootText').textContent='加载未完成，请检查网络或刷新重试';document.getElementById('bootRetry').hidden=false;}},15000)});document.getElementById('bootRetry').onclick=()=>location.reload();</script>
+</body>
+</html>

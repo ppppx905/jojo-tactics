@@ -1,0 +1,226 @@
+{
+  "_comment": "生图 -> 原子素材 的切分配置。每张图一条。names 顺序 = 从左到右、从上到下。",
+  "sheets": [
+    {
+      "name": "terrain",
+      "src": "assets/src/A_terrain_3x3.png",
+      "out": "assets/out",
+      "mode": "grid",
+      "cols": 3,
+      "rows": 3,
+      "margin": 6,
+      "size": 128,
+      "scale": 2,
+      "pad": 0.08,
+      "names": [
+        "rock",
+        "bush",
+        "heal",
+        "hazard",
+        "rubble",
+        "branch",
+        "bones",
+        "mushroom",
+        "crystal"
+      ]
+    },
+    {
+      "name": "terrain-plane",
+      "_comment": "飞机机舱版地形皮肤：一张 2×2 图，四个物件分别对应 岩石/草丛/恢复点/毒沼 的效果（效果不变，只换外观与名字）。切片进 assets/out/terrain-plane/。",
+      "src": "assets/src/arena-terrain-plane.png",
+      "out": "assets/out",
+      "mode": "grid",
+      "cols": 2,
+      "rows": 2,
+      "margin": 6,
+      "size": 128,
+      "scale": 2,
+      "pad": 0.08,
+      "key": {
+        "color": [
+          255,
+          0,
+          255
+        ],
+        "channel": "g"
+      },
+      "names": [
+        "plane-rock",
+        "plane-bush",
+        "plane-heal",
+        "plane-hazard"
+      ]
+    },
+    {
+      "name": "parts",
+      "_comment": "第五章「力量」的敌方『船体要害』棋子素材：一张 2×2 图，四个钢制船体部件。洋红幕抠图（钢是冷灰蓝，用蓝幕会把零件本身抠掉）。切片进 assets/out/parts/。",
+      "src": "assets/src/parts-ship.png",
+      "out": "assets/out",
+      "mode": "grid",
+      "cols": 2,
+      "rows": 2,
+      "margin": 6,
+      "size": 128,
+      "scale": 2,
+      "pad": 0.08,
+      "key": {
+        "color": [
+          255,
+          0,
+          255
+        ],
+        "channel": "g"
+      },
+      "names": [
+        "part-boiler",
+        "part-column",
+        "part-winch",
+        "part-valve"
+      ]
+    },
+    {
+      "name": "texture",
+      "src": "assets/src/I_paper.png",
+      "out": "assets/out",
+      "mode": "grid",
+      "cols": 1,
+      "rows": 1,
+      "size": 256,
+      "scale": 2,
+      "pad": 0,
+      "seamless": true,
+      "flatten": 0.55,
+      "desat": 0.9,
+      "names": [
+        "paper"
+      ],
+      "posterize": 5,
+      "smooth": 0.5
+    },
+    {
+      "name": "tokens",
+      "src": "assets/src/C_tokens_2x2.png",
+      "out": "assets/out",
+      "mode": "grid",
+      "cols": 2,
+      "rows": 2,
+      "margin": 6,
+      "size": 96,
+      "scale": 2,
+      "pad": 0.06,
+      "names": [
+        "fist",
+        "clock",
+        "serpent",
+        "hawk"
+      ]
+    },
+    {
+      "name": "pieces",
+      "src": "assets/src/D_pieces_2x4.png",
+      "_note": "3 行 x 2 列；蓝幕抠图（洋红幕会让角色自带紫/粉元素被误伤）",
+      "out": "assets/out",
+      "mode": "boxes",
+      "size": 128,
+      "scale": 2,
+      "pad": 0.04,
+      "contact": true,
+      "contactSize": 44,
+      "key": {
+        "color": [
+          0,
+          0,
+          255
+        ],
+        "channel": "r",
+        "tol": 0.5,
+        "erode": 1,
+        "feather": 0.8
+      },
+      "names": [
+        "jotaro",
+        "star_platinum",
+        "dio",
+        "the_world",
+        "kakyoin",
+        "hierophant",
+        "avdol",
+        "magicians_red"
+      ],
+      "boxes": [
+        {
+          "name": "jotaro",
+          "box": [
+            24,
+            64,
+            252,
+            337
+          ]
+        },
+        {
+          "name": "star_platinum",
+          "box": [
+            260,
+            36,
+            488,
+            337
+          ]
+        },
+        {
+          "name": "dio",
+          "box": [
+            537,
+            63,
+            764,
+            337
+          ]
+        },
+        {
+          "name": "the_world",
+          "box": [
+            772,
+            66,
+            1001,
+            337
+          ]
+        },
+        {
+          "name": "kakyoin",
+          "box": [
+            25,
+            391,
+            252,
+            682
+          ]
+        },
+        {
+          "name": "hierophant",
+          "box": [
+            260,
+            399,
+            488,
+            682
+          ]
+        },
+        {
+          "name": "avdol",
+          "box": [
+            537,
+            399,
+            764,
+            683
+          ]
+        },
+        {
+          "name": "magicians_red",
+          "box": [
+            772,
+            419,
+            1002,
+            683
+          ]
+        }
+      ]
+    }
+  ]
+}
