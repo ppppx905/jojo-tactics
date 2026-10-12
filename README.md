@@ -5,7 +5,7 @@
 
 > **在线玩**：https://ppppx905.github.io/jojo-tactics/（同样内容的旧地址：https://ppppx905.github.io/jojo/）
 >
-> 想离线留一份：`jojo-standalone.html` 是打包好的单文件版本（约 1 MB），双击即玩。
+> 想离线留一份：`jojo-standalone.html`（约 1 MB）把代码合并成一个文件，**和 `assets/` 文件夹放在一起**后双击即玩（`index.html` 走的是浏览器模块加载，直接双击会被浏览器的 file:// 限制拦住）。
 
 ![战斗界面](docs/screenshot-battle.jpg)
 
@@ -53,7 +53,7 @@ node --test --experimental-test-isolation=none tests/*.test.js
 素材完整性检查（缺图会报出来，避免线上出现占位图形）：
 
 ```bash
-node tools/check-assets.mjs     # 14 个角色 / 70 项引用 / 0 缺失
+node tools/check-assets.mjs     # 15 个角色 / 70 项素材引用 / 0 缺失
 node tools/check-html.mjs       # HTML 结构与 id 契约
 ```
 
@@ -67,7 +67,8 @@ tests/                471 条断言（node:test，无需任何依赖）
 tools/                自己写的小工具：静态服务器、打包、素材处理、素材检查
 assets/               游戏运行时读取的素材（立绘/肖像/插画/地形/场地/音乐）
 docs/                 设计文档、交接文档与美术提示词
-jojo-standalone.html  打包好的单文件版（双击即玩，不需要起服务器）
+jojo-standalone.html  代码合并成一个文件的版本（双击即玩，但需与 assets/ 同目录）
+使用说明.txt          给玩家看的说明（怎么开始 / 怎么操作 / 手机上怎么玩）
 ```
 
 引擎（`src/core/`）不碰 DOM、不碰计时器、不碰音频——所以规则可以在 Node 里被完整测试，
