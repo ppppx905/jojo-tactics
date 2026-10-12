@@ -7,9 +7,13 @@
 >
 > 想离线留一份：`jojo-standalone.html` 是打包好的单文件版本（约 1 MB），双击即玩。
 
-![战斗界面](docs/preview.png)
+![战斗界面](docs/screenshot-battle.jpg)
 
-*战斗界面（早期美术设计稿）*
+*实机画面：18×13 的六边形棋盘、地形、双方本体与替身，右下是技能栏*
+
+![标题界面](docs/screenshot-title.jpg)
+
+*标题界面*
 
 ---
 
